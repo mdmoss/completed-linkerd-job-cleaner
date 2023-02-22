@@ -18,9 +18,9 @@ const LinkerdContainerName = "linkerd-proxy"
 var verbose = false
 
 func main() {
-	kubeconfig := flag.String("kubeconfig", "", "Path to kubeconfig file, for running out-of-cluster")
-	verboseFlag := flag.Bool("verbose", false, "Provide verbose output")
-	shutdownSelf := flag.Bool("shutdown-self", false, "Post to http://localhost:4191/shutdown to shutdown our own proxy when finished")
+	kubeconfig := flag.String("kubeconfig", "", "Path to kubeconfig file, for running externally to a cluster")
+	verboseFlag := flag.Bool("verbose", false, "Enable verbose logging")
+	shutdownSelf := flag.Bool("shutdown-self", false, "Post to http://localhost:4191/shutdown to shut down our own proxy when finished (default if -kubeconfig is not provided)")
 	flag.Parse()
 
 	log.Println("completed-linkerd-job-cleaner is starting...")
@@ -76,7 +76,7 @@ func main() {
 
 	log.Printf("cleaned up %d pod(s) with lingering containers (out of %d total)", deleted, len(pods.Items))
 
-	if *shutdownSelf {
+	if *shutdownSelf || *kubeconfig == "" {
 		log.Printf("shutting down local proxy")
 		http.Post("http://localhost:4191/shutdown", "", nil)
 	}
