@@ -58,12 +58,19 @@ func main() {
 
 	for _, pod := range pods.Items {
 		if onlyLinkerdProxyRemaining(pod) {
-			owner := getSingleOwningJob(pod)
+			if allOtherContainersCompletedSuccessfully(pod) {
+				owner := getSingleOwningJob(pod)
 
-			if owner != nil {
-				deleteJobByNameAndNamespace(clientset, owner.Name, pod.Namespace)
+				if owner != nil {
+					deleteJobByNameAndNamespace(clientset, owner.Name, pod.Namespace)
+					deleted += 1
+				}
+			} else {
+				// Delete the pod, but not the owning job.
+				deletePod(clientset, pod)
 				deleted += 1
 			}
+
 		}
 	}
 
@@ -91,7 +98,7 @@ func onlyLinkerdProxyRemaining(pod v1.Pod) bool {
 		}
 
 		if container.State.Running != nil {
-			if container.Name == "linkerd-proxy" {
+			if container.Name == LinkerdContainerName {
 				linkerdProxyRunning = true
 			} else {
 				if verbose {
@@ -106,9 +113,23 @@ func onlyLinkerdProxyRemaining(pod v1.Pod) bool {
 		if verbose {
 			log.Printf("skipping: no linkerd-proxy container found\n")
 		}
+		return false
 	}
 
-	return linkerdProxyRunning
+	return true
+}
+
+func allOtherContainersCompletedSuccessfully(pod v1.Pod) bool {
+	for _, container := range pod.Status.ContainerStatuses {
+		if container.Name == LinkerdContainerName {
+			continue
+		}
+		if container.State.Terminated == nil || container.State.Terminated.ExitCode != 0 {
+			return false
+		}
+	}
+
+	return true
 }
 
 func getSingleOwningJob(pod v1.Pod) *metav1.OwnerReference {
@@ -123,4 +144,10 @@ func deleteJobByNameAndNamespace(clientset *kubernetes.Clientset, name, namespac
 
 	foreground := metav1.DeletePropagationForeground
 	clientset.BatchV1().Jobs(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{PropagationPolicy: &foreground})
+}
+
+func deletePod(clientset *kubernetes.Clientset, pod v1.Pod) {
+	log.Printf("deleting Pod:%s/%s\n", pod.Namespace, pod.Name)
+
+	clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 }
