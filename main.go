@@ -18,12 +18,12 @@ const LinkerdContainerName = "linkerd-proxy"
 var verbose = false
 
 func main() {
-	log.Println("completed-linkerd-job-cleaner is starting...")
-
 	kubeconfig := flag.String("kubeconfig", "", "Path to kubeconfig file, for running out-of-cluster")
 	verboseFlag := flag.Bool("verbose", false, "Provide verbose output")
 	shutdownSelf := flag.Bool("shutdown-self", false, "Post to http://localhost:4191/shutdown to shutdown our own proxy when finished")
 	flag.Parse()
+
+	log.Println("completed-linkerd-job-cleaner is starting...")
 
 	if *verboseFlag {
 		verbose = *verboseFlag
