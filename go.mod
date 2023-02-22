@@ -1,4 +1,4 @@
-module mdmoss/linkerd-completed-job-cleaner
+module mdmoss/completed-linkerd-job-cleaner
 
 go 1.19
 

@@ -13,10 +13,12 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const LinkerdContainerName = "linkerd-proxy"
+
 var verbose = false
 
 func main() {
-	log.Println("linkerd-completed-job-cleaner is starting...")
+	log.Println("completed-linkerd-job-cleaner is starting...")
 
 	kubeconfig := flag.String("kubeconfig", "", "Path to kubeconfig file, for running out-of-cluster")
 	verboseFlag := flag.Bool("verbose", false, "Provide verbose output")

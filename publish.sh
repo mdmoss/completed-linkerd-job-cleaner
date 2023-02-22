@@ -7,5 +7,5 @@ VERSION=$1
 
 docker buildx build .\
   --platform linux/amd64 \
-  --tag mdmoss/linkerd-completed-job-cleaner:$VERSION \
+  --tag mdmoss/completed-linkerd-job-cleaner:$VERSION \
   --push
