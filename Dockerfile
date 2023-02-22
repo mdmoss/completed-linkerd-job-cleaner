@@ -7,5 +7,6 @@ RUN go build -v -o /usr/bin/linkerd-completed-job-cleaner
 
 FROM alpine AS run
 COPY --from=build /usr/bin/linkerd-completed-job-cleaner /usr/bin/linkerd-completed-job-cleaner
-# USER nonroot:nonroot
+RUN adduser -D nonroot
+USER nonroot
 ENTRYPOINT [ "/usr/bin/linkerd-completed-job-cleaner" ]
