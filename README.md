@@ -12,7 +12,7 @@ There's two popular ways to handle this:
 - Make sure you don't put your Jobs and CronJobs in the service mesh, or
 - Update your jobs to call the `/shutdown` endpoint using [linkerd-await](https://github.com/linkerd/linkerd-await) or something similar.
 
-This tool provides a third option: deployed to a cluster, it will periodically scan running Pods and delete any that are complete (as well as the Job that owns them).
+This tool provides a third option: deployed to a cluster as a CronJob, it scans running Pods and deletes any that are complete (as well as the Job that owns them).
 
 Pods will be deleted if all their containers have terminated, other than the linkerd-proxy sidecar container.
 
