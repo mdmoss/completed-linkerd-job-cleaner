@@ -22,7 +22,7 @@ Further reading: https://linkerd.io/2.12/tasks/graceful-shutdown/#graceful-shutd
 
 ## Running locally against a Kubernetes cluster
 
-No artifacts are published other than the Docker image, so to run locally you'll need to check out the repo and build yourself.
+No artifacts are published other than the Docker image, so to run locally you'll need to check out the code and build it yourself.
 
 Once you have, you can run against a cluster by providing a path to a kubeconfig file.
 
